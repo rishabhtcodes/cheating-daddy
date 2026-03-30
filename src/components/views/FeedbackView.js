@@ -121,7 +121,7 @@ export class FeedbackView extends LitElement {
 
     async _loadVersion() {
         try {
-            this._version = await cheatingDaddy.getVersion();
+            this._version = await devilAI.getVersion();
             this.requestUpdate();
         } catch (e) {}
     }
@@ -159,7 +159,7 @@ export class FeedbackView extends LitElement {
                 body.email = this._feedbackEmail.trim();
             }
 
-            const res = await fetch('https://api.cheatingdaddy.com/api/feedback', {
+            const res = await fetch('https://api.devilai.com/api/feedback', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),

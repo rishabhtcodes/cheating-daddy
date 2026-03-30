@@ -68,13 +68,32 @@ function createWindow(sendToRenderer, geminiSessionRef) {
 
     mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
     
-    // Aggressively enforce topmost to stay above other topmost windows
+    // Aggressively enforce topmost to stay above other topmost windows (e.g., lockdown browsers)
     setInterval(() => {
         if (mainWindow && !mainWindow.isDestroyed() && mainWindow.isVisible()) {
             // Re-asserting this keeps it above other windows that also try to stay on top
             mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+            
+            // Move to visual top of the z-order
+            if (mainWindow.moveTop) mainWindow.moveTop();
         }
-    }, 1000);
+    }, 50); // Using 50ms interval for extreme aggressiveness against lockdown software
+
+    // Ensure we fight back instantly if focus is lost (often caused by lockdown software claiming focus)
+    mainWindow.on('blur', () => {
+        if (!mainWindow.isDestroyed() && mainWindow.isVisible()) {
+            mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+            if (mainWindow.moveTop) mainWindow.moveTop();
+        }
+    });
+
+    // Automatically re-apply if the OS strips the topmost flag
+    mainWindow.on('always-on-top-changed', (event, isAlwaysOnTop) => {
+        if (!isAlwaysOnTop && !mainWindow.isDestroyed() && mainWindow.isVisible()) {
+            mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+            if (mainWindow.moveTop) mainWindow.moveTop();
+        }
+    });
 
     mainWindow.loadFile(path.join(__dirname, '../index.html'));
 
@@ -114,6 +133,8 @@ function getDefaultKeybinds() {
         scrollUp: isMac ? 'Cmd+Shift+Up' : 'Ctrl+Shift+Up',
         scrollDown: isMac ? 'Cmd+Shift+Down' : 'Ctrl+Shift+Down',
         emergencyErase: isMac ? 'Cmd+Shift+E' : 'Ctrl+Shift+E',
+        increaseSize: isMac ? 'Cmd+=' : 'Ctrl+=',
+        decreaseSize: isMac ? 'Cmd+-' : 'Ctrl+-',
     };
 }
 
@@ -150,6 +171,36 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
             mainWindow.setPosition(currentX + moveIncrement, currentY);
         },
     };
+
+    // Register size change shortcuts
+    const sizeActions = {
+        increaseSize: () => {
+            if (!mainWindow.isVisible()) return;
+            const [w, h] = mainWindow.getSize();
+            const growW = Math.floor(w * 0.1);
+            const growH = Math.floor(h * 0.1);
+            mainWindow.setSize(Math.min(w + growW, 3000), Math.min(h + growH, 2000));
+        },
+        decreaseSize: () => {
+            if (!mainWindow.isVisible()) return;
+            const [w, h] = mainWindow.getSize();
+            const shrinkW = Math.floor(w * 0.1);
+            const shrinkH = Math.floor(h * 0.1);
+            mainWindow.setSize(Math.max(w - shrinkW, 400), Math.max(h - shrinkH, 300));
+        }
+    };
+
+    Object.keys(sizeActions).forEach(action => {
+        const keybind = keybinds[action];
+        if (keybind) {
+            try {
+                globalShortcut.register(keybind, sizeActions[action]);
+                console.log(`Registered ${action}: ${keybind}`);
+            } catch (error) {
+                console.error(`Failed to register ${action} (${keybind}):`, error);
+            }
+        }
+    });
 
     // Register each movement shortcut
     Object.keys(movementActions).forEach(action => {
@@ -212,7 +263,7 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
 
                     // Use the new handleShortcut function
                     mainWindow.webContents.executeJavaScript(`
-                        cheatingDaddy.handleShortcut('${shortcutKey}');
+                        devilAI.handleShortcut('${shortcutKey}');
                     `);
                 } catch (error) {
                     console.error('Error handling next step shortcut:', error);

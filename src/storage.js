@@ -44,11 +44,11 @@ function getConfigDir() {
     let configDir;
 
     if (platform === 'win32') {
-        configDir = path.join(os.homedir(), 'AppData', 'Roaming', 'cheating-daddy-config');
+        configDir = path.join(os.homedir(), 'AppData', 'Roaming', 'devil-ai-config');
     } else if (platform === 'darwin') {
-        configDir = path.join(os.homedir(), 'Library', 'Application Support', 'cheating-daddy-config');
+        configDir = path.join(os.homedir(), 'Library', 'Application Support', 'devil-ai-config');
     } else {
-        configDir = path.join(os.homedir(), '.config', 'cheating-daddy-config');
+        configDir = path.join(os.homedir(), '.config', 'devil-ai-config');
     }
 
     return configDir;

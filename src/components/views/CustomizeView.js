@@ -220,12 +220,12 @@ export class CustomizeView extends LitElement {
     }
 
     getThemes() {
-        return cheatingDaddy.theme.getAll();
+        return devilAI.theme.getAll();
     }
 
     async _loadFromStorage() {
         try {
-            const [prefs, keybinds] = await Promise.all([cheatingDaddy.storage.getPreferences(), cheatingDaddy.storage.getKeybinds()]);
+            const [prefs, keybinds] = await Promise.all([devilAI.storage.getPreferences(), devilAI.storage.getKeybinds()]);
             this.googleSearchEnabled = prefs.googleSearchEnabled ?? true;
             this.backgroundTransparency = prefs.backgroundTransparency ?? 0.8;
             this.fontSize = prefs.fontSize ?? 20;
@@ -290,7 +290,7 @@ export class CustomizeView extends LitElement {
     }
 
     getDefaultKeybinds() {
-        const isMac = cheatingDaddy.isMacOS || navigator.platform.includes('Mac');
+        const isMac = devilAI.isMacOS || navigator.platform.includes('Mac');
         return {
             moveUp: isMac ? 'Alt+Up' : 'Ctrl+Up',
             moveDown: isMac ? 'Alt+Down' : 'Ctrl+Down',
@@ -303,6 +303,8 @@ export class CustomizeView extends LitElement {
             nextResponse: isMac ? 'Cmd+]' : 'Ctrl+]',
             scrollUp: isMac ? 'Cmd+Shift+Up' : 'Ctrl+Shift+Up',
             scrollDown: isMac ? 'Cmd+Shift+Down' : 'Ctrl+Shift+Down',
+            increaseSize: isMac ? 'Cmd+=' : 'Ctrl+=',
+            decreaseSize: isMac ? 'Cmd+-' : 'Ctrl+-',
         };
     }
 
@@ -319,11 +321,13 @@ export class CustomizeView extends LitElement {
             { key: 'nextResponse', name: 'Next Response', description: 'Move to next AI response' },
             { key: 'scrollUp', name: 'Scroll Response Up', description: 'Scroll response content upward' },
             { key: 'scrollDown', name: 'Scroll Response Down', description: 'Scroll response content downward' },
+            { key: 'increaseSize', name: 'Increase Window Size', description: 'Make the app window larger' },
+            { key: 'decreaseSize', name: 'Decrease Window Size', description: 'Make the app window smaller' },
         ];
     }
 
     async saveKeybinds() {
-        await cheatingDaddy.storage.setKeybinds(this.keybinds);
+        await devilAI.storage.setKeybinds(this.keybinds);
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
             ipcRenderer.send('update-keybinds', this.keybinds);
@@ -352,25 +356,25 @@ export class CustomizeView extends LitElement {
 
     async handleCustomPromptInput(e) {
         this.customPrompt = e.target.value;
-        await cheatingDaddy.storage.updatePreference('customPrompt', this.customPrompt);
+        await devilAI.storage.updatePreference('customPrompt', this.customPrompt);
     }
 
     async handleAudioModeSelect(e) {
         this.audioMode = e.target.value;
-        await cheatingDaddy.storage.updatePreference('audioMode', this.audioMode);
+        await devilAI.storage.updatePreference('audioMode', this.audioMode);
         this.requestUpdate();
     }
 
     async handleThemeChange(e) {
         this.theme = e.target.value;
-        await cheatingDaddy.theme.save(this.theme);
+        await devilAI.theme.save(this.theme);
         this.updateBackgroundAppearance();
         this.requestUpdate();
     }
 
     async handleGoogleSearchChange(e) {
         this.googleSearchEnabled = e.target.checked;
-        await cheatingDaddy.storage.updatePreference('googleSearchEnabled', this.googleSearchEnabled);
+        await devilAI.storage.updatePreference('googleSearchEnabled', this.googleSearchEnabled);
         if (window.require) {
             try {
                 const { ipcRenderer } = window.require('electron');
@@ -384,19 +388,19 @@ export class CustomizeView extends LitElement {
 
     async handleBackgroundTransparencyChange(e) {
         this.backgroundTransparency = parseFloat(e.target.value);
-        await cheatingDaddy.storage.updatePreference('backgroundTransparency', this.backgroundTransparency);
+        await devilAI.storage.updatePreference('backgroundTransparency', this.backgroundTransparency);
         this.updateBackgroundAppearance();
         this.requestUpdate();
     }
 
     updateBackgroundAppearance() {
-        const colors = cheatingDaddy.theme.get(this.theme);
-        cheatingDaddy.theme.applyBackgrounds(colors.background, this.backgroundTransparency);
+        const colors = devilAI.theme.get(this.theme);
+        devilAI.theme.applyBackgrounds(colors.background, this.backgroundTransparency);
     }
 
     async handleFontSizeChange(e) {
         this.fontSize = parseInt(e.target.value, 10);
-        await cheatingDaddy.storage.updatePreference('fontSize', this.fontSize);
+        await devilAI.storage.updatePreference('fontSize', this.fontSize);
         this.updateFontSize();
         this.requestUpdate();
     }
@@ -463,7 +467,7 @@ export class CustomizeView extends LitElement {
 
     async resetKeybinds() {
         this.keybinds = this.getDefaultKeybinds();
-        await cheatingDaddy.storage.setKeybinds(null);
+        await devilAI.storage.setKeybinds(null);
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
             ipcRenderer.send('update-keybinds', this.keybinds);
@@ -492,12 +496,12 @@ export class CustomizeView extends LitElement {
                 theme: 'dark',
             };
             for (const [key, value] of Object.entries(defaults)) {
-                await cheatingDaddy.storage.updatePreference(key, value);
+                await devilAI.storage.updatePreference(key, value);
             }
 
             // Restore keybinds
             this.keybinds = this.getDefaultKeybinds();
-            await cheatingDaddy.storage.setKeybinds(null);
+            await devilAI.storage.setKeybinds(null);
             if (window.require) {
                 const { ipcRenderer } = window.require('electron');
                 ipcRenderer.send('update-keybinds', this.keybinds);
@@ -522,7 +526,7 @@ export class CustomizeView extends LitElement {
             // Apply visual changes
             this.updateBackgroundAppearance();
             this.updateFontSize();
-            await cheatingDaddy.theme.save(defaults.theme);
+            await devilAI.theme.save(defaults.theme);
 
             this.clearStatusMessage = 'All settings restored to defaults';
             this.clearStatusType = 'success';
@@ -543,7 +547,7 @@ export class CustomizeView extends LitElement {
         this.clearStatusType = '';
         this.requestUpdate();
         try {
-            await cheatingDaddy.storage.clearAll();
+            await devilAI.storage.clearAll();
             this.clearStatusMessage = 'Successfully cleared all local data';
             this.clearStatusType = 'success';
             this.requestUpdate();

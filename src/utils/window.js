@@ -66,9 +66,15 @@ function createWindow(sendToRenderer, geminiSessionRef) {
     const y = 0;
     mainWindow.setPosition(x, y);
 
-    if (process.platform === 'win32') {
-        mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
-    }
+    mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+    
+    // Aggressively enforce topmost to stay above other topmost windows
+    setInterval(() => {
+        if (mainWindow && !mainWindow.isDestroyed() && mainWindow.isVisible()) {
+            // Re-asserting this keeps it above other windows that also try to stay on top
+            mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+        }
+    }, 1000);
 
     mainWindow.loadFile(path.join(__dirname, '../index.html'));
 

@@ -36,8 +36,7 @@ function createWindow(sendToRenderer, geminiSessionRef) {
         },
         { useSystemPicker: true }
     );
-
-    mainWindow.setResizable(false);
+    mainWindow.setResizable(true);
     mainWindow.setContentProtection(true);
     mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
@@ -414,6 +413,20 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
         // With the sidebar layout, the window size is user-controlled.
         // This handler is kept for compatibility but is a no-op now.
         return { success: true };
+    });
+
+    ipcMain.handle('simulate-pagedown', async event => {
+        return new Promise((resolve) => {
+            if (process.platform === 'win32') {
+                const { exec } = require('child_process');
+                exec('powershell.exe -Command "$wshell = New-Object -ComObject WScript.Shell; $wshell.SendKeys(\'{PGDN}\')"', (err) => {
+                    resolve({ success: !err });
+                });
+            } else {
+                // Not supported on mac/linux yet via powershell
+                resolve({ success: false, error: 'Unsupported platform' });
+            }
+        });
     });
 }
 

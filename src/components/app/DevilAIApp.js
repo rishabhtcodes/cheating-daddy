@@ -341,6 +341,24 @@ export class DevilAIApp extends LitElement {
         ::-webkit-scrollbar-thumb:hover {
             background: #444444;
         }
+        
+        .resize-handle {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 14px;
+            height: 14px;
+            cursor: nwse-resize;
+            background: linear-gradient(135deg, transparent 50%, var(--text-muted) 50%);
+            opacity: 0.3;
+            -webkit-app-region: no-drag;
+            z-index: 10000;
+            transition: opacity var(--transition);
+        }
+        
+        .resize-handle:hover {
+            opacity: 1;
+        }
     `;
 
     static properties = {
@@ -506,7 +524,8 @@ export class DevilAIApp extends LitElement {
 
     addNewResponse(response) {
         const wasOnLatest = this.currentResponseIndex === this.responses.length - 1;
-        this.responses = [...this.responses, response];
+        const formattedResponse = typeof response === 'string' ? { isUser: false, text: response } : response;
+        this.responses = [...this.responses, formattedResponse];
         if (wasOnLatest || this.currentResponseIndex === -1) {
             this.currentResponseIndex = this.responses.length - 1;
         }
@@ -515,8 +534,9 @@ export class DevilAIApp extends LitElement {
     }
 
     updateCurrentResponse(response) {
-        if (this.responses.length > 0) {
-            this.responses = [...this.responses.slice(0, -1), response];
+        if (this.responses.length > 0 && !this.responses[this.responses.length - 1].isUser) {
+            const formattedResponse = typeof response === 'string' ? { isUser: false, text: response } : response;
+            this.responses = [...this.responses.slice(0, -1), formattedResponse];
         } else {
             this.addNewResponse(response);
         }
@@ -675,6 +695,11 @@ export class DevilAIApp extends LitElement {
     }
 
     async handleSendText(message) {
+        // Optimistically add user message to UI
+        this.responses = [...this.responses, { isUser: true, text: message }];
+        this.currentResponseIndex = this.responses.length - 1;
+        this.requestUpdate();
+
         const result = await window.devilAI.sendTextMessage(message);
         if (!result.success) {
             this.setStatus('Error sending message: ' + result.error);
@@ -892,6 +917,7 @@ export class DevilAIApp extends LitElement {
                     </div>
                 </div>
             </div>
+            <div class="resize-handle"></div>
         `;
     }
 }

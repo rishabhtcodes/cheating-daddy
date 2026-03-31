@@ -1,5 +1,6 @@
 import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
 import { unifiedPageStyles } from './sharedPageStyles.js';
+import '../ui/CustomSelect.js';
 
 export class CustomizeView extends LitElement {
     static styles = [
@@ -578,22 +579,32 @@ export class CustomizeView extends LitElement {
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Audio Mode</label>
-                        <select class="control" .value=${this.audioMode} @change=${this.handleAudioModeSelect}>
-                            <option value="speaker_only">Speaker Only (Interviewer)</option>
-                            <option value="mic_only">Microphone Only (Me)</option>
-                            <option value="both">Both Speaker and Microphone</option>
-                        </select>
+                        <custom-select
+                            style="width: 200px"
+                            .value=${this.audioMode}
+                            @change=${this.handleAudioModeSelect}
+                            .options=${[
+                                { value: 'speaker_only', label: 'Speaker Only (Interviewer)' },
+                                { value: 'mic_only', label: 'Microphone Only (Me)' },
+                                { value: 'both', label: 'Both Speaker and Microphone' }
+                            ]}>
+                        </custom-select>
                     </div>
                     ${this.audioMode !== 'speaker_only' ? html`
                         <div class="warning-callout">May cause unexpected behavior. Only change this if you know what you're doing.</div>
                     ` : ''}
                     <div class="form-group">
                         <label class="form-label">Image Quality</label>
-                        <select class="control" .value=${this.selectedImageQuality} @change=${this.handleImageQualitySelect}>
-                            <option value="high">High Quality</option>
-                            <option value="medium">Medium Quality</option>
-                            <option value="low">Low Quality</option>
-                        </select>
+                        <custom-select
+                            style="width: 200px"
+                            .value=${this.selectedImageQuality}
+                            @change=${this.handleImageQualitySelect}
+                            .options=${[
+                                { value: 'high', label: 'High Quality' },
+                                { value: 'medium', label: 'Medium Quality' },
+                                { value: 'low', label: 'Low Quality' }
+                            ]}>
+                        </custom-select>
                     </div>
                 </div>
             </section>
@@ -607,9 +618,12 @@ export class CustomizeView extends LitElement {
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Speech Language</label>
-                        <select class="control" .value=${this.selectedLanguage} @change=${this.handleLanguageSelect}>
-                            ${this.getLanguages().map(language => html`<option value=${language.value}>${language.name}</option>`)}
-                        </select>
+                        <custom-select
+                            style="width: 200px"
+                            .value=${this.selectedLanguage}
+                            @change=${this.handleLanguageSelect}
+                            .options=${this.getLanguages()}>
+                        </custom-select>
                     </div>
                 </div>
             </section>
@@ -623,9 +637,12 @@ export class CustomizeView extends LitElement {
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Theme</label>
-                        <select class="control" .value=${this.theme} @change=${this.handleThemeChange}>
-                            ${this.getThemes().map(theme => html`<option value=${theme.value}>${theme.name}</option>`)}
-                        </select>
+                        <custom-select
+                            style="width: 200px"
+                            .value=${this.theme}
+                            @change=${this.handleThemeChange}
+                            .options=${this.getThemes()}>
+                        </custom-select>
                     </div>
                     <div class="form-group slider-wrap">
                         <div class="slider-header">

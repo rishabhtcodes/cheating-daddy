@@ -1,4 +1,5 @@
 import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
+import '../ui/CustomSelect.js';
 
 export class MainView extends LitElement {
     static styles = css`
@@ -937,15 +938,16 @@ export class MainView extends LitElement {
                     <label class="form-label">Whisper Model</label>
                     ${this.whisperDownloading ? html`<div class="whisper-spinner"></div>` : ''}
                 </div>
-                <select
+                <custom-select
                     .value=${this._whisperModel}
                     @change=${e => this._saveWhisperModel(e.target.value)}
-                >
-                    <option value="Xenova/whisper-tiny" ?selected=${this._whisperModel === 'Xenova/whisper-tiny'}>Tiny (fastest, least accurate)</option>
-                    <option value="Xenova/whisper-base" ?selected=${this._whisperModel === 'Xenova/whisper-base'}>Base</option>
-                    <option value="Xenova/whisper-small" ?selected=${this._whisperModel === 'Xenova/whisper-small'}>Small (recommended)</option>
-                    <option value="Xenova/whisper-medium" ?selected=${this._whisperModel === 'Xenova/whisper-medium'}>Medium (most accurate, slowest)</option>
-                </select>
+                    .options=${[
+                        { value: 'Xenova/whisper-tiny', label: 'Tiny (fastest, least accurate)' },
+                        { value: 'Xenova/whisper-base', label: 'Base' },
+                        { value: 'Xenova/whisper-small', label: 'Small (recommended)' },
+                        { value: 'Xenova/whisper-medium', label: 'Medium (most accurate, slowest)' }
+                    ]}>
+                </custom-select>
                 <div class="form-hint">${this.whisperDownloading ? 'Downloading model...' : 'Downloaded automatically on first use'}</div>
             </div>
 

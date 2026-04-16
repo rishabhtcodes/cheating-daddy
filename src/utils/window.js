@@ -127,6 +127,7 @@ function getDefaultKeybinds() {
         toggleVisibility: isMac ? 'Cmd+\\' : 'Ctrl+\\',
         toggleClickThrough: isMac ? 'Cmd+M' : 'Ctrl+M',
         nextStep: isMac ? 'Cmd+Enter' : 'Ctrl+Enter',
+        nextStepLong: isMac ? 'Cmd+Shift+Enter' : 'Ctrl+Shift+Enter',
         previousResponse: isMac ? 'Cmd+[' : 'Ctrl+[',
         nextResponse: isMac ? 'Cmd+]' : 'Ctrl+]',
         scrollUp: isMac ? 'Cmd+Shift+Up' : 'Ctrl+Shift+Up',
@@ -274,6 +275,28 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
         }
     }
 
+    // Register long step shortcut
+    if (keybinds.nextStepLong) {
+        try {
+            globalShortcut.register(keybinds.nextStepLong, async () => {
+                console.log('Long step shortcut triggered');
+                try {
+                    const isMac = process.platform === 'darwin';
+                    const shortcutKey = isMac ? 'cmd+shift+enter' : 'ctrl+shift+enter';
+
+                    mainWindow.webContents.executeJavaScript(`
+                        devilAI.handleShortcut('${shortcutKey}');
+                    `);
+                } catch (error) {
+                    console.error('Error handling long step shortcut:', error);
+                }
+            });
+            console.log(`Registered nextStepLong: ${keybinds.nextStepLong}`);
+        } catch (error) {
+            console.error(`Failed to register nextStepLong (${keybinds.nextStepLong}):`, error);
+        }
+    }
+
     // Register previous response shortcut
     if (keybinds.previousResponse) {
         try {
@@ -375,6 +398,7 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
                 const x = Math.floor((screenWidth - fullWidth) / 2);
                 mainWindow.setSize(fullWidth, fullHeight);
                 mainWindow.setPosition(x, 0);
+                
                 mainWindow.setIgnoreMouseEvents(false);
                 mainWindow.setFocusable(true); // Allow normal interactions like typing
             }
@@ -421,7 +445,10 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
         return new Promise((resolve) => {
             if (process.platform === 'win32') {
                 const { exec } = require('child_process');
-                exec('powershell.exe -Command "$wshell = New-Object -ComObject WScript.Shell; $wshell.SendKeys(\'{PGDN}\')"', (err) => {
+                // Using native keybd_event is much more reliable and circumvents WScript restrictions
+                const psCommand = `Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class Win32 { [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo); }'; [Win32]::keybd_event(0x22, 0, 0, 0); Start-Sleep -Milliseconds 50; [Win32]::keybd_event(0x22, 0, 2, 0);`;
+                
+                exec(`powershell.exe -NoProfile -NonInteractive -Command "${psCommand}"`, (err) => {
                     resolve({ success: !err });
                 });
             } else {

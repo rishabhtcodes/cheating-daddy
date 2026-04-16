@@ -776,7 +776,7 @@ async function sendAudioToGemini(base64Data, geminiSessionRef) {
     }
 }
 
-async function sendImageToGeminiHttp(base64Data, prompt) {
+async function sendImageToGeminiHttp(base64Data, prompt, retryCount = 0) {
     // Get available model based on rate limits
     const model = getAvailableModel();
 
@@ -827,6 +827,19 @@ async function sendImageToGeminiHttp(base64Data, prompt) {
 
         return { success: true, text: fullText, model: model };
     } catch (error) {
+        const errorStr = (error.message || '') + (error.toString());
+        // Handle Gemini 429 Too Many Requests / Quota Exceeded
+        if ((errorStr.includes('429') || errorStr.includes('Too Many Requests') || errorStr.includes('Quota exceeded')) && retryCount < 3) {
+            const delayInSeconds = 15;
+            console.log(`Rate limited (429). Retrying in ${delayInSeconds}s (Attempt ${retryCount + 1}/3)...`);
+            sendToRenderer('update-status', `Rate limit hit. Retrying automatically in ${delayInSeconds}s...`);
+            
+            await new Promise(resolve => setTimeout(resolve, delayInSeconds * 1000));
+            
+            sendToRenderer('update-status', `Retrying screenshot analysis...`);
+            return await sendImageToGeminiHttp(base64Data, prompt, retryCount + 1);
+        }
+
         console.error('Error sending image to Gemini HTTP:', error);
         return { success: false, error: error.message };
     }

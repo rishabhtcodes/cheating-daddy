@@ -877,6 +877,10 @@ function handleShortcut(shortcutKey) {
         } else {
             captureManualScreenshot();
         }
+    } else if (shortcutKey === 'ctrl+shift+enter' || shortcutKey === 'cmd+shift+enter') {
+        if (currentView !== 'main') {
+            captureManualScreenshotLong();
+        }
     }
 }
 

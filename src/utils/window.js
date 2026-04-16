@@ -66,13 +66,13 @@ function createWindow(sendToRenderer, geminiSessionRef) {
     mainWindow.setPosition(x, y);
 
     mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
-    
+
     // Aggressively enforce topmost to stay above other topmost windows (e.g., lockdown browsers)
     setInterval(() => {
         if (mainWindow && !mainWindow.isDestroyed() && mainWindow.isVisible()) {
             // Re-asserting this keeps it above other windows that also try to stay on top
             mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
-            
+
             // Move to visual top of the z-order
             if (mainWindow.moveTop) mainWindow.moveTop();
         }

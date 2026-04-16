@@ -8,7 +8,7 @@ import { OnboardingView } from '../views/OnboardingView.js';
 import { AICustomizeView } from '../views/AICustomizeView.js';
 import { FeedbackView } from '../views/FeedbackView.js';
 
-export class DevilAIApp extends LitElement {
+export class CheatingDaddyApp extends LitElement {
     static styles = css`
         * {
             box-sizing: border-box;
@@ -414,10 +414,10 @@ export class DevilAIApp extends LitElement {
 
     async _checkForUpdates() {
         try {
-            this._localVersion = await devilAI.getVersion();
+            this._localVersion = await cheatingDaddy.getVersion();
             this.requestUpdate();
 
-            const res = await fetch('https://raw.githubusercontent.com/sohzm/devil-ai/refs/heads/master/package.json');
+            const res = await fetch('https://raw.githubusercontent.com/sohzm/cheating-daddy/refs/heads/master/package.json');
             if (!res.ok) return;
             const remote = await res.json();
             const remoteVersion = remote.version;
@@ -438,8 +438,8 @@ export class DevilAIApp extends LitElement {
     async _loadFromStorage() {
         try {
             const [config, prefs] = await Promise.all([
-                devilAI.storage.getConfig(),
-                devilAI.storage.getPreferences()
+                cheatingDaddy.storage.getConfig(),
+                cheatingDaddy.storage.getPreferences()
             ]);
 
             this.currentView = config.onboarded ? 'main' : 'onboarding';
@@ -552,7 +552,7 @@ export class DevilAIApp extends LitElement {
 
     async handleClose() {
         if (this.currentView === 'assistant') {
-            devilAI.stopCapture();
+            cheatingDaddy.stopCapture();
             if (window.require) {
                 const { ipcRenderer } = window.require('electron');
                 await ipcRenderer.invoke('close-session');
@@ -585,11 +585,11 @@ export class DevilAIApp extends LitElement {
     // ── Session start ──
 
     async handleStart() {
-        const prefs = await devilAI.storage.getPreferences();
+        const prefs = await cheatingDaddy.storage.getPreferences();
         const providerMode = prefs.providerMode || 'cloud';
 
         if (providerMode === 'cloud') {
-            const creds = await devilAI.storage.getCredentials();
+            const creds = await cheatingDaddy.storage.getCredentials();
             if (!creds.cloudToken || creds.cloudToken.trim() === '') {
                 const mainView = this.shadowRoot.querySelector('main-view');
                 if (mainView && mainView.triggerApiKeyError) {
@@ -598,7 +598,7 @@ export class DevilAIApp extends LitElement {
                 return;
             }
 
-            const success = await devilAI.initializeCloud(this.selectedProfile);
+            const success = await cheatingDaddy.initializeCloud(this.selectedProfile);
             if (!success) {
                 const mainView = this.shadowRoot.querySelector('main-view');
                 if (mainView && mainView.triggerApiKeyError) {
@@ -607,7 +607,7 @@ export class DevilAIApp extends LitElement {
                 return;
             }
         } else if (providerMode === 'local') {
-            const success = await devilAI.initializeLocal(this.selectedProfile);
+            const success = await cheatingDaddy.initializeLocal(this.selectedProfile);
             if (!success) {
                 const mainView = this.shadowRoot.querySelector('main-view');
                 if (mainView && mainView.triggerApiKeyError) {
@@ -616,7 +616,7 @@ export class DevilAIApp extends LitElement {
                 return;
             }
         } else {
-            const apiKey = await devilAI.storage.getApiKey();
+            const apiKey = await cheatingDaddy.storage.getApiKey();
             if (!apiKey || apiKey === '') {
                 const mainView = this.shadowRoot.querySelector('main-view');
                 if (mainView && mainView.triggerApiKeyError) {
@@ -625,10 +625,10 @@ export class DevilAIApp extends LitElement {
                 return;
             }
 
-            await devilAI.initializeGemini(this.selectedProfile, this.selectedLanguage);
+            await cheatingDaddy.initializeGemini(this.selectedProfile, this.selectedLanguage);
         }
 
-        devilAI.startCapture(this.selectedScreenshotInterval, this.selectedImageQuality);
+        cheatingDaddy.startCapture(this.selectedScreenshotInterval, this.selectedImageQuality);
         this.responses = [];
         this.currentResponseIndex = -1;
         this.startTime = Date.now();
@@ -655,27 +655,27 @@ export class DevilAIApp extends LitElement {
 
     async handleProfileChange(profile) {
         this.selectedProfile = profile;
-        await devilAI.storage.updatePreference('selectedProfile', profile);
+        await cheatingDaddy.storage.updatePreference('selectedProfile', profile);
     }
 
     async handleLanguageChange(language) {
         this.selectedLanguage = language;
-        await devilAI.storage.updatePreference('selectedLanguage', language);
+        await cheatingDaddy.storage.updatePreference('selectedLanguage', language);
     }
 
     async handleScreenshotIntervalChange(interval) {
         this.selectedScreenshotInterval = interval;
-        await devilAI.storage.updatePreference('selectedScreenshotInterval', interval);
+        await cheatingDaddy.storage.updatePreference('selectedScreenshotInterval', interval);
     }
 
     async handleImageQualityChange(quality) {
         this.selectedImageQuality = quality;
-        await devilAI.storage.updatePreference('selectedImageQuality', quality);
+        await cheatingDaddy.storage.updatePreference('selectedImageQuality', quality);
     }
 
     async handleLayoutModeChange(layoutMode) {
         this.layoutMode = layoutMode;
-        await devilAI.storage.updateConfig('layout', layoutMode);
+        await cheatingDaddy.storage.updateConfig('layout', layoutMode);
         if (window.require) {
             try {
                 const { ipcRenderer } = window.require('electron');
@@ -700,7 +700,7 @@ export class DevilAIApp extends LitElement {
         this.currentResponseIndex = this.responses.length - 1;
         this.requestUpdate();
 
-        const result = await window.devilAI.sendTextMessage(message);
+        const result = await window.cheatingDaddy.sendTextMessage(message);
         if (!result.success) {
             this.setStatus('Error sending message: ' + result.error);
         } else {
@@ -825,7 +825,7 @@ export class DevilAIApp extends LitElement {
         return html`
             <div class="sidebar ${this._isLiveMode() ? 'hidden' : ''}">
                 <div class="sidebar-brand">
-                    <h1>Devil AI</h1>
+                    <h1>Cheating Daddy</h1>
                 </div>
                 <nav class="sidebar-nav">
                     ${items.map(item => html`
@@ -922,4 +922,4 @@ export class DevilAIApp extends LitElement {
     }
 }
 
-customElements.define('devil-ai-app', DevilAIApp);
+customElements.define('cheating-daddy-app', CheatingDaddyApp);

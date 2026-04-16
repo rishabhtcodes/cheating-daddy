@@ -160,8 +160,8 @@ export class AppHeader extends LitElement {
 
     async _checkForUpdates() {
         try {
-            const currentVersion = await devilAI.getVersion();
-            const response = await fetch('https://raw.githubusercontent.com/sohzm/devil-ai/refs/heads/master/package.json');
+            const currentVersion = await cheatingDaddy.getVersion();
+            const response = await fetch('https://raw.githubusercontent.com/sohzm/cheating-daddy/refs/heads/master/package.json');
             if (!response.ok) return;
 
             const remotePackage = await response.json();
@@ -242,15 +242,15 @@ export class AppHeader extends LitElement {
 
     getViewTitle() {
         const titles = {
-            onboarding: 'Welcome to Devil AI',
-            main: 'Devil AI',
+            onboarding: 'Welcome to Cheating Daddy',
+            main: 'Cheating Daddy',
             customize: 'Customize',
             help: 'Help & Shortcuts',
             history: 'Conversation History',
             advanced: 'Advanced Tools',
-            assistant: 'Devil AI',
+            assistant: 'Cheating Daddy',
         };
-        return titles[this.currentView] || 'Devil AI';
+        return titles[this.currentView] || 'Cheating Daddy';
     }
 
     getElapsedTime() {
@@ -315,7 +315,7 @@ export class AppHeader extends LitElement {
                     ${this.currentView === 'assistant'
                         ? html`
                               <button @click=${this.onHideToggleClick} class="button">
-                                  Hide&nbsp;&nbsp;<span class="key" style="pointer-events: none;">${devilAI.isMacOS ? 'Cmd' : 'Ctrl'}</span
+                                  Hide&nbsp;&nbsp;<span class="key" style="pointer-events: none;">${cheatingDaddy.isMacOS ? 'Cmd' : 'Ctrl'}</span
                                   >&nbsp;&nbsp;<span class="key">&bsol;</span>
                               </button>
                               <button @click=${this.onCloseClick} class="icon-button window-close">

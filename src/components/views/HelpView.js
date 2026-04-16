@@ -105,7 +105,7 @@ export class HelpView extends LitElement {
 
     async _loadKeybinds() {
         try {
-            const keybinds = await devilAI.storage.getKeybinds();
+            const keybinds = await cheatingDaddy.storage.getKeybinds();
             if (keybinds) {
                 this.keybinds = { ...this.getDefaultKeybinds(), ...keybinds };
                 this.requestUpdate();
@@ -116,7 +116,7 @@ export class HelpView extends LitElement {
     }
 
     getDefaultKeybinds() {
-        const isMac = devilAI.isMacOS || navigator.platform.includes('Mac');
+        const isMac = cheatingDaddy.isMacOS || navigator.platform.includes('Mac');
         return {
             moveUp: isMac ? 'Alt+Up' : 'Ctrl+Up',
             moveDown: isMac ? 'Alt+Down' : 'Ctrl+Down',
@@ -168,7 +168,7 @@ export class HelpView extends LitElement {
                         <div class="surface-title">Support</div>
                         <div class="link-row">
                             <button class="link-button" @click=${() => this._open('https://devilai.com')}>Website</button>
-                            <button class="link-button" @click=${() => this._open('https://github.com/sohzm/devil-ai')}>GitHub</button>
+                            <button class="link-button" @click=${() => this._open('https://github.com/sohzm/cheating-daddy')}>GitHub</button>
                             <button class="link-button" @click=${() => this._open('https://discord.gg/GCBdubnXfJ')}>Discord</button>
                         </div>
                     </section>

@@ -263,7 +263,7 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
 
                     // Use the new handleShortcut function
                     mainWindow.webContents.executeJavaScript(`
-                        devilAI.handleShortcut('${shortcutKey}');
+                        cheatingDaddy.handleShortcut('${shortcutKey}');
                     `);
                 } catch (error) {
                     console.error('Error handling next step shortcut:', error);
@@ -285,7 +285,7 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
                     const shortcutKey = isMac ? 'cmd+shift+enter' : 'ctrl+shift+enter';
 
                     mainWindow.webContents.executeJavaScript(`
-                        devilAI.handleShortcut('${shortcutKey}');
+                        cheatingDaddy.handleShortcut('${shortcutKey}');
                     `);
                 } catch (error) {
                     console.error('Error handling long step shortcut:', error);

@@ -146,9 +146,9 @@ async function initializeGemini(profile = 'interview', language = 'en-US') {
         const prefs = await storage.getPreferences();
         const success = await ipcRenderer.invoke('initialize-gemini', apiKey, prefs.customPrompt || '', profile, language);
         if (success) {
-            devilAI.setStatus('Live');
+            cheatingDaddy.setStatus('Live');
         } else {
-            devilAI.setStatus('error');
+            cheatingDaddy.setStatus('error');
         }
     }
 }
@@ -162,10 +162,10 @@ async function initializeLocal(profile = 'interview') {
 
     const success = await ipcRenderer.invoke('initialize-local', ollamaHost, ollamaModel, whisperModel, profile, customPrompt);
     if (success) {
-        devilAI.setStatus('Local AI Live');
+        cheatingDaddy.setStatus('Local AI Live');
         return true;
     } else {
-        devilAI.setStatus('error');
+        cheatingDaddy.setStatus('error');
         return false;
     }
 }
@@ -174,17 +174,17 @@ async function initializeCloud(profile = 'interview') {
     const creds = await storage.getCredentials();
     const token = creds.cloudToken;
     if (!token || !token.trim()) {
-        devilAI.setStatus('error');
+        cheatingDaddy.setStatus('error');
         return false;
     }
 
     const prefs = await storage.getPreferences();
     const success = await ipcRenderer.invoke('initialize-cloud', token, profile, prefs.customPrompt || '');
     if (success) {
-        devilAI.setStatus('Live');
+        cheatingDaddy.setStatus('Live');
         return true;
     } else {
-        devilAI.setStatus('error');
+        cheatingDaddy.setStatus('error');
         return false;
     }
 }
@@ -192,7 +192,7 @@ async function initializeCloud(profile = 'interview') {
 // Listen for status updates
 ipcRenderer.on('update-status', (event, status) => {
     console.log('Status update:', status);
-    devilAI.setStatus(status);
+    cheatingDaddy.setStatus(status);
 });
 
 async function startCapture(screenshotIntervalSeconds = 5, imageQuality = 'medium') {
@@ -361,7 +361,7 @@ async function startCapture(screenshotIntervalSeconds = 5, imageQuality = 'mediu
         console.log('Manual mode enabled - screenshots will be captured on demand only');
     } catch (err) {
         console.error('Error starting capture:', err);
-        devilAI.setStatus('error');
+        cheatingDaddy.setStatus('error');
     }
 }
 
@@ -648,7 +648,7 @@ async function captureManualScreenshot(imageQuality = null) {
                     // Response already displayed via streaming events (new-response/update-response)
                 } else {
                     console.error('Failed to get image response:', result.error);
-                    devilAI.addNewResponse(`Error: ${result.error}`);
+                    cheatingDaddy.addNewResponse(`Error: ${result.error}`);
                 }
             };
             reader.readAsDataURL(blob);
@@ -869,11 +869,11 @@ ipcRenderer.on('clear-sensitive-data', async () => {
 
 // Handle shortcuts based on current view
 function handleShortcut(shortcutKey) {
-    const currentView = devilAI.getCurrentView();
+    const currentView = cheatingDaddy.getCurrentView();
 
     if (shortcutKey === 'ctrl+enter' || shortcutKey === 'cmd+enter') {
         if (currentView === 'main') {
-            devilAI.element().handleStart();
+            cheatingDaddy.element().handleStart();
         } else {
             captureManualScreenshot();
         }
@@ -885,7 +885,7 @@ function handleShortcut(shortcutKey) {
 }
 
 // Create reference to the main app element
-const devilAIApp = document.querySelector('devil-ai-app');
+const cheatingDaddyApp = document.querySelector('cheating-daddy-app');
 
 // ============ THEME SYSTEM ============
 const theme = {
@@ -1111,23 +1111,23 @@ const theme = {
     }
 };
 
-// Consolidated devilAI object - all functions in one place
-const devilAI = {
+// Consolidated cheatingDaddy object - all functions in one place
+const cheatingDaddy = {
     // App version
     getVersion: async () => ipcRenderer.invoke('get-app-version'),
 
     // Element access
-    element: () => devilAIApp,
-    e: () => devilAIApp,
+    element: () => cheatingDaddyApp,
+    e: () => cheatingDaddyApp,
 
     // App state functions - access properties directly from the app element
-    getCurrentView: () => devilAIApp.currentView,
-    getLayoutMode: () => devilAIApp.layoutMode,
+    getCurrentView: () => cheatingDaddyApp.currentView,
+    getLayoutMode: () => cheatingDaddyApp.layoutMode,
 
     // Status and response functions
-    setStatus: text => devilAIApp.setStatus(text),
-    addNewResponse: response => devilAIApp.addNewResponse(response),
-    updateCurrentResponse: response => devilAIApp.updateCurrentResponse(response),
+    setStatus: text => cheatingDaddyApp.setStatus(text),
+    addNewResponse: response => cheatingDaddyApp.addNewResponse(response),
+    updateCurrentResponse: response => cheatingDaddyApp.updateCurrentResponse(response),
 
     // Core functionality
     initializeGemini,
@@ -1153,7 +1153,7 @@ const devilAI = {
 };
 
 // Make it globally available
-window.devilAI = devilAI;
+window.cheatingDaddy = cheatingDaddy;
 
 // Load theme after DOM is ready
 if (document.readyState === 'loading') {

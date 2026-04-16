@@ -1,8 +1,8 @@
 {
-    "name": "devil-ai",
-    "productName": "devil-ai",
+    "name": "cheating-daddy",
+    "productName": "cheating-daddy",
     "version": "0.7.0",
-    "description": "devil ai",
+    "description": "cheating daddy",
     "main": "src/index.js",
     "scripts": {
         "start": "electron-forge start",
@@ -12,11 +12,11 @@
         "lint": "echo \"No linting configured\""
     },
     "keywords": [
-        "devil ai",
-        "devil ai ai",
-        "devil ai ai assistant",
-        "devil ai ai assistant for interviews",
-        "devil ai ai assistant for interviews"
+        "cheating daddy",
+        "cheating daddy ai",
+        "cheating daddy ai assistant",
+        "cheating daddy ai assistant for interviews",
+        "cheating daddy ai assistant for interviews"
     ],
     "author": {
         "name": "sohzm",

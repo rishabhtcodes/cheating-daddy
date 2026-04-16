@@ -7,7 +7,7 @@ module.exports = {
             unpack: '**/{onnxruntime-node,onnxruntime-common,@huggingface/transformers,sharp,@img}/**',
         },
         extraResource: ['./src/assets/SystemAudioDump'],
-        name: 'Devil AI',
+        name: 'Cheating Daddy',
         icon: 'src/assets/logo',
         // use `security find-identity -v -p codesigning` to find your identity
         // for macos signing
@@ -32,9 +32,9 @@ module.exports = {
         {
             name: '@electron-forge/maker-squirrel',
             config: {
-                name: 'devil-ai',
-                productName: 'Devil AI',
-                shortcutName: 'Devil AI',
+                name: 'cheating-daddy',
+                productName: 'Cheating Daddy',
+                shortcutName: 'Cheating Daddy',
                 createDesktopShortcut: true,
                 createStartMenuShortcut: true,
             },
@@ -48,8 +48,8 @@ module.exports = {
             platforms: ['linux'],
             config: {
                 options: {
-                    name: 'Devil AI',
-                    productName: 'Devil AI',
+                    name: 'Cheating Daddy',
+                    productName: 'Cheating Daddy',
                     genericName: 'AI Assistant',
                     description: 'AI assistant for interviews and learning',
                     categories: ['Development', 'Education'],

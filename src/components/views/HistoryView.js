@@ -281,7 +281,7 @@ export class HistoryView extends LitElement {
     async loadSessions() {
         try {
             this.loading = true;
-            this.sessions = await devilAI.storage.getAllSessions();
+            this.sessions = await cheatingDaddy.storage.getAllSessions();
         } catch (error) {
             console.error('Error loading sessions:', error);
             this.sessions = [];
@@ -293,7 +293,7 @@ export class HistoryView extends LitElement {
 
     async openSession(sessionId) {
         try {
-            const session = await devilAI.storage.getSession(sessionId);
+            const session = await cheatingDaddy.storage.getSession(sessionId);
             if (session) {
                 this.selectedSession = session;
                 this.selectedSessionId = sessionId;

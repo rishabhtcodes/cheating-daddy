@@ -121,7 +121,7 @@ export class FeedbackView extends LitElement {
 
     async _loadVersion() {
         try {
-            this._version = await devilAI.getVersion();
+            this._version = await cheatingDaddy.getVersion();
             this.requestUpdate();
         } catch (e) {}
     }

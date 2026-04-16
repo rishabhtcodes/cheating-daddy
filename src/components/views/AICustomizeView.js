@@ -52,7 +52,7 @@ export class AICustomizeView extends LitElement {
 
     async _loadFromStorage() {
         try {
-            const prefs = await devilAI.storage.getPreferences();
+            const prefs = await cheatingDaddy.storage.getPreferences();
             this._context = prefs.customPrompt || '';
             this.requestUpdate();
         } catch (error) {
@@ -66,7 +66,7 @@ export class AICustomizeView extends LitElement {
 
     async _saveContext(val) {
         this._context = val;
-        await devilAI.storage.updatePreference('customPrompt', val);
+        await cheatingDaddy.storage.updatePreference('customPrompt', val);
     }
 
     _getProfileName(profile) {

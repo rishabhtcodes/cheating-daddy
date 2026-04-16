@@ -221,12 +221,12 @@ export class CustomizeView extends LitElement {
     }
 
     getThemes() {
-        return devilAI.theme.getAll();
+        return cheatingDaddy.theme.getAll();
     }
 
     async _loadFromStorage() {
         try {
-            const [prefs, keybinds] = await Promise.all([devilAI.storage.getPreferences(), devilAI.storage.getKeybinds()]);
+            const [prefs, keybinds] = await Promise.all([cheatingDaddy.storage.getPreferences(), cheatingDaddy.storage.getKeybinds()]);
             this.googleSearchEnabled = prefs.googleSearchEnabled ?? true;
             this.backgroundTransparency = prefs.backgroundTransparency ?? 0.8;
             this.fontSize = prefs.fontSize ?? 20;
@@ -291,7 +291,7 @@ export class CustomizeView extends LitElement {
     }
 
     getDefaultKeybinds() {
-        const isMac = devilAI.isMacOS || navigator.platform.includes('Mac');
+        const isMac = cheatingDaddy.isMacOS || navigator.platform.includes('Mac');
         return {
             moveUp: isMac ? 'Alt+Up' : 'Ctrl+Up',
             moveDown: isMac ? 'Alt+Down' : 'Ctrl+Down',
@@ -328,7 +328,7 @@ export class CustomizeView extends LitElement {
     }
 
     async saveKeybinds() {
-        await devilAI.storage.setKeybinds(this.keybinds);
+        await cheatingDaddy.storage.setKeybinds(this.keybinds);
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
             ipcRenderer.send('update-keybinds', this.keybinds);
@@ -357,25 +357,25 @@ export class CustomizeView extends LitElement {
 
     async handleCustomPromptInput(e) {
         this.customPrompt = e.target.value;
-        await devilAI.storage.updatePreference('customPrompt', this.customPrompt);
+        await cheatingDaddy.storage.updatePreference('customPrompt', this.customPrompt);
     }
 
     async handleAudioModeSelect(e) {
         this.audioMode = e.target.value;
-        await devilAI.storage.updatePreference('audioMode', this.audioMode);
+        await cheatingDaddy.storage.updatePreference('audioMode', this.audioMode);
         this.requestUpdate();
     }
 
     async handleThemeChange(e) {
         this.theme = e.target.value;
-        await devilAI.theme.save(this.theme);
+        await cheatingDaddy.theme.save(this.theme);
         this.updateBackgroundAppearance();
         this.requestUpdate();
     }
 
     async handleGoogleSearchChange(e) {
         this.googleSearchEnabled = e.target.checked;
-        await devilAI.storage.updatePreference('googleSearchEnabled', this.googleSearchEnabled);
+        await cheatingDaddy.storage.updatePreference('googleSearchEnabled', this.googleSearchEnabled);
         if (window.require) {
             try {
                 const { ipcRenderer } = window.require('electron');
@@ -389,19 +389,19 @@ export class CustomizeView extends LitElement {
 
     async handleBackgroundTransparencyChange(e) {
         this.backgroundTransparency = parseFloat(e.target.value);
-        await devilAI.storage.updatePreference('backgroundTransparency', this.backgroundTransparency);
+        await cheatingDaddy.storage.updatePreference('backgroundTransparency', this.backgroundTransparency);
         this.updateBackgroundAppearance();
         this.requestUpdate();
     }
 
     updateBackgroundAppearance() {
-        const colors = devilAI.theme.get(this.theme);
-        devilAI.theme.applyBackgrounds(colors.background, this.backgroundTransparency);
+        const colors = cheatingDaddy.theme.get(this.theme);
+        cheatingDaddy.theme.applyBackgrounds(colors.background, this.backgroundTransparency);
     }
 
     async handleFontSizeChange(e) {
         this.fontSize = parseInt(e.target.value, 10);
-        await devilAI.storage.updatePreference('fontSize', this.fontSize);
+        await cheatingDaddy.storage.updatePreference('fontSize', this.fontSize);
         this.updateFontSize();
         this.requestUpdate();
     }
@@ -468,7 +468,7 @@ export class CustomizeView extends LitElement {
 
     async resetKeybinds() {
         this.keybinds = this.getDefaultKeybinds();
-        await devilAI.storage.setKeybinds(null);
+        await cheatingDaddy.storage.setKeybinds(null);
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
             ipcRenderer.send('update-keybinds', this.keybinds);
@@ -497,12 +497,12 @@ export class CustomizeView extends LitElement {
                 theme: 'dark',
             };
             for (const [key, value] of Object.entries(defaults)) {
-                await devilAI.storage.updatePreference(key, value);
+                await cheatingDaddy.storage.updatePreference(key, value);
             }
 
             // Restore keybinds
             this.keybinds = this.getDefaultKeybinds();
-            await devilAI.storage.setKeybinds(null);
+            await cheatingDaddy.storage.setKeybinds(null);
             if (window.require) {
                 const { ipcRenderer } = window.require('electron');
                 ipcRenderer.send('update-keybinds', this.keybinds);
@@ -527,7 +527,7 @@ export class CustomizeView extends LitElement {
             // Apply visual changes
             this.updateBackgroundAppearance();
             this.updateFontSize();
-            await devilAI.theme.save(defaults.theme);
+            await cheatingDaddy.theme.save(defaults.theme);
 
             this.clearStatusMessage = 'All settings restored to defaults';
             this.clearStatusType = 'success';
@@ -548,7 +548,7 @@ export class CustomizeView extends LitElement {
         this.clearStatusType = '';
         this.requestUpdate();
         try {
-            await devilAI.storage.clearAll();
+            await cheatingDaddy.storage.clearAll();
             this.clearStatusMessage = 'Successfully cleared all local data';
             this.clearStatusType = 'success';
             this.requestUpdate();

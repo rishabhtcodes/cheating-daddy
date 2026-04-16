@@ -535,16 +535,16 @@ export class MainView extends LitElement {
     async _loadFromStorage() {
         try {
             const [prefs, creds] = await Promise.all([
-                devilAI.storage.getPreferences(),
-                devilAI.storage.getCredentials().catch(() => ({})),
+                cheatingDaddy.storage.getPreferences(),
+                cheatingDaddy.storage.getCredentials().catch(() => ({})),
             ]);
 
             this._mode = prefs.providerMode || 'cloud';
 
             // Load keys
             this._token = creds.cloudToken || '';
-            this._geminiKey = await devilAI.storage.getApiKey().catch(() => '') || '';
-            this._groqKey = await devilAI.storage.getGroqApiKey().catch(() => '') || '';
+            this._geminiKey = await cheatingDaddy.storage.getApiKey().catch(() => '') || '';
+            this._groqKey = await cheatingDaddy.storage.getGroqApiKey().catch(() => '') || '';
             this._openaiKey = creds.openaiKey || '';
 
             // Load local AI settings
@@ -693,7 +693,7 @@ export class MainView extends LitElement {
         this._mode = mode;
         this._tokenError = false;
         this._keyError = false;
-        await devilAI.storage.updatePreference('providerMode', mode);
+        await cheatingDaddy.storage.updatePreference('providerMode', mode);
         this.requestUpdate();
     }
 
@@ -701,8 +701,8 @@ export class MainView extends LitElement {
         this._token = val;
         this._tokenError = false;
         try {
-            const creds = await devilAI.storage.getCredentials().catch(() => ({}));
-            await devilAI.storage.setCredentials({ ...creds, cloudToken: val });
+            const creds = await cheatingDaddy.storage.getCredentials().catch(() => ({}));
+            await cheatingDaddy.storage.setCredentials({ ...creds, cloudToken: val });
         } catch (e) {}
         this.requestUpdate();
     }
@@ -710,40 +710,40 @@ export class MainView extends LitElement {
     async _saveGeminiKey(val) {
         this._geminiKey = val;
         this._keyError = false;
-        await devilAI.storage.setApiKey(val);
+        await cheatingDaddy.storage.setApiKey(val);
         this.requestUpdate();
     }
 
     async _saveGroqKey(val) {
         this._groqKey = val;
-        await devilAI.storage.setGroqApiKey(val);
+        await cheatingDaddy.storage.setGroqApiKey(val);
         this.requestUpdate();
     }
 
     async _saveOpenaiKey(val) {
         this._openaiKey = val;
         try {
-            const creds = await devilAI.storage.getCredentials().catch(() => ({}));
-            await devilAI.storage.setCredentials({ ...creds, openaiKey: val });
+            const creds = await cheatingDaddy.storage.getCredentials().catch(() => ({}));
+            await cheatingDaddy.storage.setCredentials({ ...creds, openaiKey: val });
         } catch (e) {}
         this.requestUpdate();
     }
 
     async _saveOllamaHost(val) {
         this._ollamaHost = val;
-        await devilAI.storage.updatePreference('ollamaHost', val);
+        await cheatingDaddy.storage.updatePreference('ollamaHost', val);
         this.requestUpdate();
     }
 
     async _saveOllamaModel(val) {
         this._ollamaModel = val;
-        await devilAI.storage.updatePreference('ollamaModel', val);
+        await cheatingDaddy.storage.updatePreference('ollamaModel', val);
         this.requestUpdate();
     }
 
     async _saveWhisperModel(val) {
         this._whisperModel = val;
-        await devilAI.storage.updatePreference('whisperModel', val);
+        await cheatingDaddy.storage.updatePreference('whisperModel', val);
         this.requestUpdate();
     }
 
@@ -895,7 +895,7 @@ export class MainView extends LitElement {
             <div class="cloud-promo" @click=${() => this._saveMode('cloud')}>
                 <div class="cloud-promo-glow"></div>
                 <div class="cloud-promo-header">
-                    <span class="cloud-promo-title">Switch to Devil AI Cloud</span>
+                    <span class="cloud-promo-title">Switch to Cheating Daddy Cloud</span>
                     <span class="cloud-promo-arrow">&rarr;</span>
                 </div>
                 <div class="cloud-promo-desc">No API keys, no setup, no billing headaches. It just works.</div>
@@ -957,7 +957,7 @@ export class MainView extends LitElement {
             <div class="cloud-promo" @click=${() => this._saveMode('cloud')}>
                 <div class="cloud-promo-glow"></div>
                 <div class="cloud-promo-header">
-                    <span class="cloud-promo-title">Switch to Devil AI Cloud</span>
+                    <span class="cloud-promo-title">Switch to Cheating Daddy Cloud</span>
                     <span class="cloud-promo-arrow">&rarr;</span>
                 </div>
                 <div class="cloud-promo-desc">No API keys, no setup, no billing headaches. It just works.</div>
@@ -979,12 +979,12 @@ export class MainView extends LitElement {
             <div class="form-wrapper">
                 ${this._mode === 'local' ? html`
                     <div class="title-row">
-                        <div class="page-title">Devil AI <span class="mode-suffix">Local AI</span></div>
+                        <div class="page-title">Cheating Daddy <span class="mode-suffix">Local AI</span></div>
                         <button class="help-btn" @click=${() => { this._showLocalHelp = !this._showLocalHelp; }}>${this._showLocalHelp ? closeIcon : helpIcon}</button>
                     </div>
                 ` : html`
                     <div class="page-title">
-                        ${this._mode === 'cloud' ? 'Devil AI Cloud' : html`Devil AI <span class="mode-suffix">BYOK</span>`}
+                        ${this._mode === 'cloud' ? 'Cheating Daddy Cloud' : html`Cheating Daddy <span class="mode-suffix">BYOK</span>`}
                     </div>
                 `}
                 <div class="page-subtitle">

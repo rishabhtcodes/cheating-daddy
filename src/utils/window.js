@@ -367,6 +367,7 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
                 const x = Math.floor((screenWidth - liveWidth) / 2);
                 mainWindow.setSize(liveWidth, liveHeight);
                 mainWindow.setPosition(x, 0);
+                mainWindow.setFocusable(false); // Prevent stealing focus from lockdown browser
             } else {
                 // Restore full size
                 const fullWidth = 1100;
@@ -375,6 +376,7 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
                 mainWindow.setSize(fullWidth, fullHeight);
                 mainWindow.setPosition(x, 0);
                 mainWindow.setIgnoreMouseEvents(false);
+                mainWindow.setFocusable(true); // Allow normal interactions like typing
             }
         }
     });

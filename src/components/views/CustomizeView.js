@@ -586,13 +586,14 @@ export class CustomizeView extends LitElement {
                             .options=${[
                                 { value: 'speaker_only', label: 'Speaker Only (Interviewer)' },
                                 { value: 'mic_only', label: 'Microphone Only (Me)' },
-                                { value: 'both', label: 'Both Speaker and Microphone' }
-                            ]}>
+                                { value: 'both', label: 'Both Speaker and Microphone' },
+                            ]}
+                        >
                         </custom-select>
                     </div>
-                    ${this.audioMode !== 'speaker_only' ? html`
-                        <div class="warning-callout">May cause unexpected behavior. Only change this if you know what you're doing.</div>
-                    ` : ''}
+                    ${this.audioMode !== 'speaker_only'
+                        ? html` <div class="warning-callout">May cause unexpected behavior. Only change this if you know what you're doing.</div> `
+                        : ''}
                     <div class="form-group">
                         <label class="form-label">Image Quality</label>
                         <custom-select
@@ -602,8 +603,9 @@ export class CustomizeView extends LitElement {
                             .options=${[
                                 { value: 'high', label: 'High Quality' },
                                 { value: 'medium', label: 'Medium Quality' },
-                                { value: 'low', label: 'Low Quality' }
-                            ]}>
+                                { value: 'low', label: 'Low Quality' },
+                            ]}
+                        >
                         </custom-select>
                     </div>
                 </div>
@@ -622,7 +624,8 @@ export class CustomizeView extends LitElement {
                             style="width: 200px"
                             .value=${this.selectedLanguage}
                             @change=${this.handleLanguageSelect}
-                            .options=${this.getLanguages()}>
+                            .options=${this.getLanguages()}
+                        >
                         </custom-select>
                     </div>
                 </div>
@@ -637,11 +640,7 @@ export class CustomizeView extends LitElement {
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Theme</label>
-                        <custom-select
-                            style="width: 200px"
-                            .value=${this.theme}
-                            @change=${this.handleThemeChange}
-                            .options=${this.getThemes()}>
+                        <custom-select style="width: 200px" .value=${this.theme} @change=${this.handleThemeChange} .options=${this.getThemes()}>
                         </custom-select>
                     </div>
                     <div class="form-group slider-wrap">
@@ -683,20 +682,22 @@ export class CustomizeView extends LitElement {
         return html`
             <section class="surface">
                 <div class="surface-title">Keyboard Shortcuts</div>
-                ${this.getKeybindActions().map(action => html`
-                    <div class="keybind-row">
-                        <span class="keybind-name">${action.name}</span>
-                        <input
-                            type="text"
-                            class="control keybind-input"
-                            .value=${this.keybinds[action.key]}
-                            data-action=${action.key}
-                            @keydown=${this.handleKeybindInput}
-                            @focus=${this.handleKeybindFocus}
-                            readonly
-                        />
-                    </div>
-                `)}
+                ${this.getKeybindActions().map(
+                    action => html`
+                        <div class="keybind-row">
+                            <span class="keybind-name">${action.name}</span>
+                            <input
+                                type="text"
+                                class="control keybind-input"
+                                .value=${this.keybinds[action.key]}
+                                data-action=${action.key}
+                                @keydown=${this.handleKeybindInput}
+                                @focus=${this.handleKeybindFocus}
+                                readonly
+                            />
+                        </div>
+                    `
+                )}
                 <div style="margin-top: var(--space-sm);">
                     <button class="control" style="width:auto;padding:8px 10px;" @click=${this.resetKeybinds}>Reset to defaults</button>
                 </div>
@@ -716,9 +717,9 @@ export class CustomizeView extends LitElement {
                         ${this.isClearing ? 'Clearing...' : 'Delete all data'}
                     </button>
                 </div>
-                ${this.clearStatusMessage ? html`
-                    <div class="status ${this.clearStatusType === 'success' ? 'success' : 'error'}">${this.clearStatusMessage}</div>
-                ` : ''}
+                ${this.clearStatusMessage
+                    ? html` <div class="status ${this.clearStatusType === 'success' ? 'success' : 'error'}">${this.clearStatusMessage}</div> `
+                    : ''}
             </section>
         `;
     }
@@ -728,10 +729,7 @@ export class CustomizeView extends LitElement {
             <div class="unified-page">
                 <div class="unified-wrap">
                     <div class="page-title">Settings</div>
-                    ${this.renderAudioSection()}
-                    ${this.renderLanguageSection()}
-                    ${this.renderAppearanceSection()}
-                    ${this.renderKeyboardSection()}
+                    ${this.renderAudioSection()} ${this.renderLanguageSection()} ${this.renderAppearanceSection()} ${this.renderKeyboardSection()}
                     ${this.renderPrivacySection()}
                 </div>
             </div>

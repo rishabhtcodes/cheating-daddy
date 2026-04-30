@@ -12,7 +12,7 @@ export class CustomSelect extends LitElement {
 
         .select-btn {
             background: var(--bg-elevated, #191919);
-            color: var(--text-primary, #F5F5F5);
+            color: var(--text-primary, #f5f5f5);
             border: 1px solid var(--border, #222);
             border-radius: var(--radius-sm, 4px);
             padding: 8px 12px;
@@ -21,7 +21,9 @@ export class CustomSelect extends LitElement {
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            transition: border-color 0.15s, box-shadow 0.15s;
+            transition:
+                border-color 0.15s,
+                box-shadow 0.15s;
             height: 35px; /* Match standard inputs */
             box-sizing: border-box;
         }
@@ -32,8 +34,8 @@ export class CustomSelect extends LitElement {
 
         .select-btn:focus {
             outline: none;
-            border-color: var(--accent, #3B82F6);
-            box-shadow: 0 0 0 1px var(--accent, #3B82F6);
+            border-color: var(--accent, #3b82f6);
+            box-shadow: 0 0 0 1px var(--accent, #3b82f6);
         }
 
         .dropdown {
@@ -61,20 +63,22 @@ export class CustomSelect extends LitElement {
             font-size: var(--font-size-sm, 13px);
             color: var(--text-secondary, #999);
             cursor: pointer;
-            transition: background 0.1s, color 0.1s;
+            transition:
+                background 0.1s,
+                color 0.1s;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .option:hover {
-            background: var(--bg-hover, #1F1F1F);
-            color: var(--text-primary, #F5F5F5);
+            background: var(--bg-hover, #1f1f1f);
+            color: var(--text-primary, #f5f5f5);
         }
 
         .option.selected {
             background: var(--bg-surface, #111);
-            color: var(--accent, #3B82F6);
+            color: var(--accent, #3b82f6);
             font-weight: 500;
         }
 
@@ -109,7 +113,7 @@ export class CustomSelect extends LitElement {
     static properties = {
         options: { type: Array },
         value: { type: String },
-        open: { type: Boolean, state: true }
+        open: { type: Boolean, state: true },
     };
 
     constructor() {
@@ -154,11 +158,13 @@ export class CustomSelect extends LitElement {
         }
         this.value = val;
         this.open = false;
-        this.dispatchEvent(new CustomEvent('change', {
-            detail: { value: val },
-            bubbles: true,
-            composed: true
-        }));
+        this.dispatchEvent(
+            new CustomEvent('change', {
+                detail: { value: val },
+                bubbles: true,
+                composed: true,
+            })
+        );
     }
 
     render() {
@@ -166,23 +172,32 @@ export class CustomSelect extends LitElement {
         const displayLabel = selectedOption.label || selectedOption.name || selectedOption.value || 'Select...';
 
         return html`
-            <div class="select-btn" tabindex="0" @click=${this._toggle} @keydown=${e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this._toggle();
-                }
-            }}>
+            <div
+                class="select-btn"
+                tabindex="0"
+                @click=${this._toggle}
+                @keydown=${e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this._toggle();
+                    }
+                }}
+            >
                 <span style="text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${displayLabel}</span>
-                <svg viewBox="0 0 20 20"><path d="M6 8l4 4 4-4"/></svg>
+                <svg viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" /></svg>
             </div>
             <div class="dropdown ${this.open ? 'open' : ''}">
-                ${this.options.map(o => html`
-                    <div class="option ${o.value === this.value ? 'selected' : ''}" 
-                         @click=${(e) => this._select(o.value, e)}
-                         title=${o.label || o.name || o.value}>
-                        ${o.label || o.name || o.value}
-                    </div>
-                `)}
+                ${this.options.map(
+                    o => html`
+                        <div
+                            class="option ${o.value === this.value ? 'selected' : ''}"
+                            @click=${e => this._select(o.value, e)}
+                            title=${o.label || o.name || o.value}
+                        >
+                            ${o.label || o.name || o.value}
+                        </div>
+                    `
+                )}
             </div>
         `;
     }

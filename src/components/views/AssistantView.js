@@ -54,12 +54,22 @@ export class AssistantView extends LitElement {
             font-weight: var(--font-weight-semibold);
         }
 
-        .response-container h1 { font-size: 1.5em; }
-        .response-container h2 { font-size: 1.3em; }
-        .response-container h3 { font-size: 1.15em; }
-        .response-container h4 { font-size: 1.05em; }
+        .response-container h1 {
+            font-size: 1.5em;
+        }
+        .response-container h2 {
+            font-size: 1.3em;
+        }
+        .response-container h3 {
+            font-size: 1.15em;
+        }
+        .response-container h4 {
+            font-size: 1.05em;
+        }
         .response-container h5,
-        .response-container h6 { font-size: 1em; }
+        .response-container h6 {
+            font-size: 1em;
+        }
 
         .response-container p {
             margin: 0.6em 0;
@@ -250,7 +260,9 @@ export class AssistantView extends LitElement {
             display: flex;
             align-items: center;
             gap: 4px;
-            transition: border-color 0.4s ease, background var(--transition);
+            transition:
+                border-color 0.4s ease,
+                background var(--transition);
             flex-shrink: 0;
             overflow: hidden;
         }
@@ -469,7 +481,7 @@ export class AssistantView extends LitElement {
         const perimeter = 2 * straightLen + 2 * arcLen;
 
         // Given a distance along the perimeter, return {x, y, nx, ny} (position + inward normal)
-        const pointOnPerimeter = (d) => {
+        const pointOnPerimeter = d => {
             d = ((d % perimeter) + perimeter) % perimeter;
             // Top straight: left to right
             if (d < straightLen) {
@@ -505,10 +517,10 @@ export class AssistantView extends LitElement {
         const seeds = Array.from({ length: PARTICLE_COUNT }).map(() => ({
             pos: Math.random(),
             drift: (Math.random() - 0.5) * 2,
-            depthSeed: Math.random()
+            depthSeed: Math.random(),
         }));
 
-        const draw = (now) => {
+        const draw = now => {
             const elapsed = (now - startTime) / 1000;
             const fade = Math.min(1, elapsed / FADE_IN);
 
@@ -623,15 +635,17 @@ export class AssistantView extends LitElement {
             if (this.responses.length === 0) {
                 container.innerHTML = `<div class="chat-message assistant-message">${this.renderMarkdown(this.getCurrentResponse())}</div>`;
             } else {
-                container.innerHTML = this.responses.map((resp) => {
-                    const isUser = typeof resp === 'object' && resp.isUser;
-                    const text = typeof resp === 'string' ? resp : (resp.text || '');
-                    const cssClass = isUser ? 'user-message' : 'assistant-message';
-                    const roleLabel = isUser ? `<div class="message-role">You</div>` : '';
-                    return `<div class="chat-message ${cssClass}">${roleLabel}${this.renderMarkdown(text)}</div>`;
-                }).join('');
+                container.innerHTML = this.responses
+                    .map(resp => {
+                        const isUser = typeof resp === 'object' && resp.isUser;
+                        const text = typeof resp === 'string' ? resp : resp.text || '';
+                        const cssClass = isUser ? 'user-message' : 'assistant-message';
+                        const roleLabel = isUser ? `<div class="message-role">You</div>` : '';
+                        return `<div class="chat-message ${cssClass}">${roleLabel}${this.renderMarkdown(text)}</div>`;
+                    })
+                    .join('');
             }
-            
+
             if (isAtBottom && this.responses.length > 0) {
                 this.scrollToBottom();
             }
@@ -649,19 +663,21 @@ export class AssistantView extends LitElement {
             <div class="controls-row">
                 <div class="input-bar">
                     <div class="input-bar-inner">
-                        <input
-                            type="text"
-                            id="textInput"
-                            placeholder="Type a message..."
-                            @keydown=${this.handleTextKeydown}
-                        />
+                        <input type="text" id="textInput" placeholder="Type a message..." @keydown=${this.handleTextKeydown} />
                     </div>
                 </div>
                 <div class="buttons-bar">
                     <button class="analyze-btn" @click=${this.handleScreenAnswerLong} title="Analyze Long Screen (Auto-Scrolls)">
                         <span class="analyze-btn-content">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
-                                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-4-4l4 4l4-4" />
+                                <path
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 5v14m-4-4l4 4l4-4"
+                                />
                             </svg>
                             Long
                         </span>
@@ -670,7 +686,14 @@ export class AssistantView extends LitElement {
                         <canvas class="analyze-canvas"></canvas>
                         <span class="analyze-btn-content">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
-                                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 3v7h6l-8 11v-7H5z" />
+                                <path
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M13 3v7h6l-8 11v-7H5z"
+                                />
                             </svg>
                             Analyze Screen
                         </span>

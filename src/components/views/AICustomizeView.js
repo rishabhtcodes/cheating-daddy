@@ -106,7 +106,8 @@ export class AICustomizeView extends LitElement {
                                     style="width: 200px"
                                     .value=${this.selectedProfile}
                                     @change=${this._handleProfileChange}
-                                    .options=${profiles}>
+                                    .options=${profiles}
+                                >
                                 </custom-select>
                             </div>
                             <div class="form-group vertical">
@@ -121,7 +122,6 @@ export class AICustomizeView extends LitElement {
                             </div>
                         </div>
                     </section>
-
                 </div>
             </div>
         `;

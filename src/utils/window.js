@@ -16,6 +16,7 @@ function createWindow(sendToRenderer, geminiSessionRef) {
         transparent: true,
         hasShadow: false,
         alwaysOnTop: true,
+        type: 'toolbar',
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false, // TODO: change to true
@@ -70,7 +71,11 @@ function createWindow(sendToRenderer, geminiSessionRef) {
     // Aggressively enforce topmost to stay above other topmost windows (e.g., lockdown browsers)
     setInterval(() => {
         if (mainWindow && !mainWindow.isDestroyed() && mainWindow.isVisible()) {
-            // Re-asserting this keeps it above other windows that also try to stay on top
+            // Force OS-level Z-order update by toggling.
+            // Electron caches the alwaysOnTop state, so calling setAlwaysOnTop(true)
+            // when it's already true does nothing natively. Toggling it bypasses this cache
+            // and forces a SetWindowPos(HWND_TOPMOST) call to beat SEB's topmost lock.
+            mainWindow.setAlwaysOnTop(false);
             mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
 
             // Move to visual top of the z-order
@@ -81,6 +86,7 @@ function createWindow(sendToRenderer, geminiSessionRef) {
     // Ensure we fight back instantly if focus is lost (often caused by lockdown software claiming focus)
     mainWindow.on('blur', () => {
         if (!mainWindow.isDestroyed() && mainWindow.isVisible()) {
+            mainWindow.setAlwaysOnTop(false);
             mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
             if (mainWindow.moveTop) mainWindow.moveTop();
         }
@@ -89,6 +95,7 @@ function createWindow(sendToRenderer, geminiSessionRef) {
     // Automatically re-apply if the OS strips the topmost flag
     mainWindow.on('always-on-top-changed', (event, isAlwaysOnTop) => {
         if (!isAlwaysOnTop && !mainWindow.isDestroyed() && mainWindow.isVisible()) {
+            mainWindow.setAlwaysOnTop(false);
             mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
             if (mainWindow.moveTop) mainWindow.moveTop();
         }
@@ -187,7 +194,7 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
             const shrinkW = Math.floor(w * 0.1);
             const shrinkH = Math.floor(h * 0.1);
             mainWindow.setSize(Math.max(w - shrinkW, 400), Math.max(h - shrinkH, 300));
-        }
+        },
     };
 
     Object.keys(sizeActions).forEach(action => {
@@ -398,7 +405,7 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
                 const x = Math.floor((screenWidth - fullWidth) / 2);
                 mainWindow.setSize(fullWidth, fullHeight);
                 mainWindow.setPosition(x, 0);
-                
+
                 mainWindow.setIgnoreMouseEvents(false);
                 mainWindow.setFocusable(true); // Allow normal interactions like typing
             }
@@ -442,13 +449,13 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
     });
 
     ipcMain.handle('simulate-pagedown', async event => {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             if (process.platform === 'win32') {
                 const { exec } = require('child_process');
                 // Using native keybd_event is much more reliable and circumvents WScript restrictions
                 const psCommand = `Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class Win32 { [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo); }'; [Win32]::keybd_event(0x22, 0, 0, 0); Start-Sleep -Milliseconds 50; [Win32]::keybd_event(0x22, 0, 2, 0);`;
-                
-                exec(`powershell.exe -NoProfile -NonInteractive -Command "${psCommand}"`, (err) => {
+
+                exec(`powershell.exe -NoProfile -NonInteractive -Command "${psCommand}"`, err => {
                     resolve({ success: !err });
                 });
             } else {

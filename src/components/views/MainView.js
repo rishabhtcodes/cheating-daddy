@@ -195,6 +195,38 @@ export class MainView extends LitElement {
             text-decoration: underline;
         }
 
+        .model-presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .model-chip {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .model-chip:hover {
+            color: var(--text-primary);
+            border-color: var(--text-muted);
+            background: var(--bg-hover);
+        }
+
+        .model-chip.active {
+            color: var(--text-primary);
+            border-color: var(--accent);
+            background: var(--bg-hover);
+            font-weight: var(--font-weight-semibold);
+        }
+
         .whisper-label-row {
             display: flex;
             align-items: center;
@@ -513,6 +545,7 @@ export class MainView extends LitElement {
         _openaiKey: { state: true },
         _tokenError: { state: true },
         _keyError: { state: true },
+        _localError: { state: true },
         // Local AI state
         _ollamaHost: { state: true },
         _ollamaModel: { state: true },
@@ -536,6 +569,7 @@ export class MainView extends LitElement {
         this._openaiKey = '';
         this._tokenError = false;
         this._keyError = false;
+        this._localError = false;
         this._showLocalHelp = false;
         this._ollamaHost = 'http://127.0.0.1:11434';
         this._ollamaModel = 'llama3.1';
@@ -714,6 +748,7 @@ export class MainView extends LitElement {
         this._mode = mode;
         this._tokenError = false;
         this._keyError = false;
+        this._localError = false;
         await cheatingDaddy.storage.updatePreference('providerMode', mode);
         this.requestUpdate();
     }
@@ -792,6 +827,8 @@ export class MainView extends LitElement {
         } else if (this._mode === 'local') {
             // Local mode doesn't need API keys, just Ollama host
             if (!this._ollamaHost.trim()) {
+                this._localError = true;
+                this.requestUpdate();
                 return;
             }
         }
@@ -802,6 +839,8 @@ export class MainView extends LitElement {
     triggerApiKeyError() {
         if (this._mode === 'cloud') {
             this._tokenError = true;
+        } else if (this._mode === 'local') {
+            this._localError = true;
         } else {
             this._keyError = true;
         }
@@ -809,6 +848,7 @@ export class MainView extends LitElement {
         setTimeout(() => {
             this._tokenError = false;
             this._keyError = false;
+            this._localError = false;
             this.requestUpdate();
         }, 2000);
     }
@@ -960,6 +1000,8 @@ export class MainView extends LitElement {
     // ── Local AI mode ──
 
     _renderLocalMode() {
+        const popularModels = ['llama3.1', 'llama3.2', 'gemma3:4b', 'mistral', 'qwen2.5'];
+
         return html`
             <div class="form-group">
                 <label class="form-label">Ollama Host</label>
@@ -967,21 +1009,31 @@ export class MainView extends LitElement {
                     type="text"
                     placeholder="http://127.0.0.1:11434"
                     .value=${this._ollamaHost}
-                    @input=${e => this._saveOllamaHost(e.target.value)}
+                    @input=${e => {
+                        this._localError = false;
+                        this._saveOllamaHost(e.target.value);
+                    }}
+                    class=${this._localError ? 'error' : ''}
                 />
-                <div class="form-hint">Ollama must be running locally</div>
+                <div class="form-hint">Ollama must be running locally (e.g. <code>ollama serve</code>)</div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Ollama Model</label>
                 <input type="text" placeholder="llama3.1" .value=${this._ollamaModel} @input=${e => this._saveOllamaModel(e.target.value)} />
-                <div class="form-hint">
-                    Run
+                <div class="model-presets">
+                    ${popularModels.map(
+                        m => html`
+                            <span class="model-chip ${this._ollamaModel === m ? 'active' : ''}" @click=${() => this._saveOllamaModel(m)}> ${m} </span>
+                        `
+                    )}
+                </div>
+                <div class="form-hint" style="margin-top: 4px;">
+                    Ensure model is pulled:
                     <code
                         style="font-family: var(--font-mono); font-size: 11px; background: var(--bg-elevated); padding: 1px 4px; border-radius: 3px;"
-                        >ollama pull ${this._ollamaModel}</code
+                        >ollama pull ${this._ollamaModel || 'llama3.1'}</code
                     >
-                    first
                 </div>
             </div>
 
@@ -994,14 +1046,14 @@ export class MainView extends LitElement {
                     .value=${this._whisperModel}
                     @change=${e => this._saveWhisperModel(e.target.value)}
                     .options=${[
-                        { value: 'Xenova/whisper-tiny', label: 'Tiny (fastest, least accurate)' },
-                        { value: 'Xenova/whisper-base', label: 'Base' },
-                        { value: 'Xenova/whisper-small', label: 'Small (recommended)' },
-                        { value: 'Xenova/whisper-medium', label: 'Medium (most accurate, slowest)' },
+                        { value: 'Xenova/whisper-tiny', label: 'Tiny (fastest, lightweight)' },
+                        { value: 'Xenova/whisper-base', label: 'Base (balanced)' },
+                        { value: 'Xenova/whisper-small', label: 'Small (recommended, best balance)' },
+                        { value: 'Xenova/whisper-medium', label: 'Medium (most accurate, slower)' },
                     ]}
                 >
                 </custom-select>
-                <div class="form-hint">${this.whisperDownloading ? 'Downloading model...' : 'Downloaded automatically on first use'}</div>
+                <div class="form-hint">${this.whisperDownloading ? 'Downloading model...' : 'Downloaded and cached automatically on first use'}</div>
             </div>
 
             ${this._renderStartButton()} ${this._renderDivider()}
@@ -1036,31 +1088,35 @@ export class MainView extends LitElement {
 
         return html`
             <div class="form-wrapper">
-                ${this._mode === 'local'
-                    ? html`
-                          <div class="title-row">
-                              <div class="page-title">Cheating Daddy <span class="mode-suffix">Local AI</span></div>
-                              <button
-                                  class="help-btn"
-                                  @click=${() => {
+                ${
+                    this._mode === 'local'
+                        ? html`
+                              <div class="title-row">
+                                  <div class="page-title">Cheating Daddy <span class="mode-suffix">Local AI</span></div>
+                                  <button
+                                      class="help-btn"
+                                      @click=${() => {
                                       this._showLocalHelp = !this._showLocalHelp;
                                   }}
-                              >
-                                  ${this._showLocalHelp ? closeIcon : helpIcon}
-                              </button>
-                          </div>
-                      `
-                    : html`
-                          <div class="page-title">
-                              ${this._mode === 'cloud' ? 'Cheating Daddy Cloud' : html`Cheating Daddy <span class="mode-suffix">BYOK</span>`}
-                          </div>
-                      `}
+                                  >
+                                      ${this._showLocalHelp ? closeIcon : helpIcon}
+                                  </button>
+                              </div>
+                          `
+                        : html`
+                              <div class="page-title">
+                                  ${this._mode === 'cloud' ? 'Cheating Daddy Cloud' : html`Cheating Daddy <span class="mode-suffix">BYOK</span>`}
+                              </div>
+                          `
+                }
                 <div class="page-subtitle">
-                    ${this._mode === 'cloud'
-                        ? 'Enter your invite code to get started'
-                        : this._mode === 'byok'
-                          ? 'Bring your own API keys'
-                          : 'Run models locally on your machine'}
+                    ${
+                        this._mode === 'cloud'
+                            ? 'Enter your invite code to get started'
+                            : this._mode === 'byok'
+                              ? 'Bring your own API keys'
+                              : 'Run models locally on your machine'
+                    }
                 </div>
 
                 ${this._mode === 'cloud' ? this._renderCloudMode() : ''} ${this._mode === 'byok' ? this._renderByokMode() : ''}
